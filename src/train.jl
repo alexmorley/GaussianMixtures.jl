@@ -43,18 +43,18 @@ GMM{T<:AbstractFloat}(n::Int, x::Vector{T}; method::Symbol=:kmeans, nInit::Int=5
 ## we sometimes end up with pathological gmms
 function sanitycheck!(gmm::GMM)
     pathological=NTuple{2}[]
-    for i in find(isnan(gmm.μ) | isinf(gmm.μ))
+    for i in find(isnan.(gmm.μ) | isinf(gmm.μ))
         gmm.μ[i] = 0
         push!(pathological, ind2sub(size(gmm.μ), i))
     end
     if kind(gmm) == :diag
-        for i in find(isnan(gmm.Σ) | isinf(gmm.Σ))
+        for i in find(isnan.(gmm.Σ) | isinf(gmm.Σ))
             gmm.Σ[i] = 1
             push!(pathological, ind2sub(size(gmm.Σ), i))
         end
     else
         for (si,s) in enumerate(gmm.Σ)
-            for i in find(isnan(s) | isinf(s))
+            for i in find(isnan.(s) | isinf(s))
                 s[i] = 1
                 push!(pathological, (si,i))
             end
